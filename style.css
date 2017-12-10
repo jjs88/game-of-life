@@ -1,0 +1,16 @@
+.board {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+}
+
+.title {
+    text-align: center;
+}
+
+
+canvas {
+    border:1px solid black;
+}
