@@ -1,54 +1,107 @@
 (function(global) {
 
 
+        //[0,0], [1,0], [2,0], [3,0], [4,0], [5,0], [6,0], [7,0], [8,0], [9,0]
+        //[0,1], [1,1], [2,1], [3,1], [4,1], [5,1], [6,1], [7,1], [8,1], [9,1] 
+        //[0,2], [1,2], [2,2], [3,2], [4,2], [5,2], [6,2], [7,2], [8,2], [9,2]
+        //[0,3], [1,3], [2,3], [3,3], [4,3], [5,3], [6,3], [7,3], [8,3], [9,3]
 
 
     var ctx = document.getElementById('myCanvas').getContext('2d');
-    var grid = []; 
+    //create separate arrays each with own memory location
+    var grid =  createArray(400); 
+    var newGrid = createArray(400);
+    // grid size
+    var xCoord = 400;
+    var yCoord = 400;
+    //color of the canvas painting
+    ctx.fillStyle = "#d02fd0";
 
-    ctx.fillStyle = "red"; // Red color
+    var startBtn = document.getElementsByClassName('btn')[0];
+    var stopBtn = document.getElementsByClassName('btn')[1];
+    var id;
 
 
+
+
+    function startGame(e) {
+        e.preventDefault();
+        createGrid();
+        fillLiveCells();
+        runGame();
+
+        toggleHidden(startBtn);
+        toggleHidden(stopBtn);
+
+
+    }
+
+    function stopGame(e) {
+        e.preventDefault();
+        window.cancelAnimationFrame(id);
+        toggleHidden(startBtn);
+        toggleHidden(stopBtn);
+    }
+
+    function toggleHidden(element) {
+        if(!element.classList.contains('hidden')) {
+            element.classList.add('hidden');
+        } else {
+            element.classList.remove('hidden');
+        }
+    }
 
     function runGame() {
-        
-                // createStartGrid();
-                updateGrid();
-                requestAnimationFrame(function() {
-                   runGame();
-                })
-            }
+
+        updateGrid();
+        id = requestAnimationFrame(function() {
+            runGame();
+        })
+    }
+
+    startBtn.addEventListener('click', startGame);
+    stopBtn.addEventListener('click', stopGame);
         
             
-    createStartGrid();
-    runGame();
+    // createGrid(); // create x,y coordinate 2d array
+    // fillLiveCells(); // fill the canvas with live cells
+    // runGame(); //continously run game
 
     
 
 
-    function createStartGrid() {
+    function getOneOrZero() {
+        var random = Math.random(); //get a random number 0-1
+        random = (random * 2); //convert it to an int
+        return Math.floor(random); // return 0 or 1
+    }
 
-        // need to create the arrays first within the grid with a value
-        for(var x = 0; x < 400; x++) {
-            grid[x] = [];
+
+    function createArray(rows) { 
+        //need to create array with inner array before we can turn it into a jagged array aka 2d array
+        var arr = [];
+        for (var i = 0; i < rows; i++) {
+            arr[i] = [];
         }
+        return arr;
+    }
 
+
+    function createGrid() {
+
+        //dyanamically create the 2d array
+        //can now automatically tack on y value for 2d after initial array creation 
 
          //row
-        for(var x=0; x < 400; x++) {
+        for(var x=0; x < xCoord; x++) {
 
             //column --> now we can set the column since it exists from first grid loop
-            for(var y = 0; y < 400; y++) {
+            for(var y = 0; y < yCoord; y++) {
 
-                var rawRandom = Math.random(); //get a raw random number
+                var binary = getOneOrZero();
 
-                var improvedNum = (rawRandom * 2); //convert it to an int
-                
-                var randomBinary = Math.floor(improvedNum);
+                if (binary === 1) {
 
-                if (randomBinary === 1) {
-
-                    ctx.fillRect(x,y,1,1);
                     grid[x][y] = 1;
 
                 } else {
@@ -58,114 +111,109 @@
             }
         }
     }
+
+
+    function fillLiveCells() {
+
+        // start x,y at 1
+        for (var x = 1; x < xCoord; x++) { 
+            for (var y = 1; y < yCoord; y++) { 
+                // only fill canvas with live cells = 1
+                if (grid[x][y] === 1) {
+                    ctx.fillRect(x, y, 1, 1);
+                }
+            }
+        }
+    }
    
-    //[0,0], [1,0], [2,0], [3,0], [4,0], [5,0], [6,0], [7,0], [8,0], [9,0]
-    //[0,1], [1,1], [2,1], [3,1], [4,1], [5,1], [6,1], [7,1], [8,1], [9,1] 
-    //[0,2], [1,2], [2,2], [3,2], [4,2], [5,2], [6,2], [7,2], [8,2], [9,2]
-    //[0,3], [1,3], [2,3], [3,3], [4,3], [5,3], [6,3], [7,3], [8,3], [9,3]
-
-
 
     function updateGrid() {
 
-        // start the loops at 1 to avoid the edges
+       // start the loops at 1 to avoid the edges and end at -1 as well otherwise errors 
         var fate;
         var state;
-        var newGrid = grid; //copy grid so we can change state
 
-        //row 
-        for(var x=1; x < 400-1; x++) {
+        //x coordinate values
+        for(var x = 1; x < xCoord - 1; x++) {
             
-            //column -->
-            for(var y=1; y < 400-1; y++) {
+            //y coordinate values
+            for(var y = 1; y < yCoord - 1; y++) {
+ 
+                var state = grid[x][y];
+                var cnt = getNeighborCnt(grid,x,y);
 
-                cnt = getNeighborCnt(grid,x,y);
-                state = grid[x][y];
-                
-
-                // is currently a live cell 
+                // living cell
                 if(state === 1) {
 
-                    fate = isAliveOrDead(state, cnt);
-
-                } 
-                //is currently a dead cell
-                else {
-
-                    if(cnt === 3) {
-
+                    if(cnt < 2) {
+                        fate = 0;
+                    } else if (cnt === 2) {
                         fate = 1;
-                        // fate = isAliveOrDead(state, cnt);
+                    } else if (cnt === 3) {
+                        fate = 1;
+                    } else if (cnt > 3) {
+                        fate = 0;
+                    } else {
+                        //default
+                        fate = 0;
                     }
                 }
 
-                //set fate to live or die (1/0)
+                //dead cell
+                if(state === 0) {
+
+                    if(cnt === 3) {
+                        fate = 1;
+                    } else {
+                        // default
+                        fate = 0;
+                    }
+                }
+
+                //set new state alive or dead
                 newGrid[x][y] = fate;
             }
-        }
+        }    
 
-        //reset orig grid then repaint to canvas
-        grid = newGrid;
+        // set orig grid to new state (must run loop to change values)
+        for (var x = 0; x < xCoord; x++) { //iterate through rows
+            for (var y = 0; y < yCoord; y++) { //iterate through columns
+                grid[x][y] = newGrid[x][y];
+    
+            }
+        }  
+        //now repaint the canvas element with new state
         repaint(grid);
-
     }
 
+
     function repaint(grid) {
+ 
+        ctx.clearRect(0,0, 400, 400); //clear canvas
 
-        ctx.clearRect(0,0, 400, 400);
-
-        for(var x=1; x<400-1;x++) {
+        for(var x = 1; x < xCoord; x++) {
         
-        for(y=1; y<400-1; y++) {
+        for(y = 1; y < yCoord; y++) {
 
             if(grid[x][y] === 1) {
-                // console.log(newGrid[x][y]);
-                ctx.fillRect(x,y,1,1);
+   
+                ctx.fillRect(x,y,1,1); //repaint canvas
             }
             
         }
     }
-    // console.log('repainted');
 }
 
-    function isAliveOrDead(state, cnt) {
-
-        //1 lives
-        //0 dies
-
-        // underpopulation (dies)
-        if(state && cnt < 2) {
-
-            // console.log('underpop')
-            return 0;
-        } 
-        // overpopulation (dies)
-        else if (state && cnt > 3) {
-
-            // console.log('overpop')
-            return 0;
-        } 
-        // lives
-        else if ((state && cnt == 2) || (state && cnt === 3)) {
-
-            // console.log('stay alive');
-            return 1;
-
-        } else if ((state === 0) && (cnt === 3)) {
-
-            // console.log('alive')
-            return 1;
-
-        } else {
-            // default nothing
-            // console.log('def');
-        }
-    }
-
+  
     
     function getNeighborCnt(grid, x, y) {
 
-        var cnt=0;
+        //[0,0], [1,0], [2,0], [3,0], [4,0], [5,0], [6,0], [7,0], [8,0], [9,0]
+        //[0,1], [1,1], [2,1], [3,1], [4,1], [5,1], [6,1], [7,1], [8,1], [9,1] 
+        //[0,2], [1,2], [2,2], [3,2], [4,2], [5,2], [6,2], [7,2], [8,2], [9,2]
+        //[0,3], [1,3], [2,3], [3,3], [4,3], [5,3], [6,3], [7,3], [8,3], [9,3]      
+
+        let cnt = 0;
 
         // perform logic to get the number of dead or alive neighbor pixels
 
@@ -212,20 +260,6 @@
         return cnt;
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

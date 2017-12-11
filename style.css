@@ -1,3 +1,26 @@
+body {
+    background-color: #07071c;
+    font-family: 'Lato', sans-serif;
+}
+
+.btn {
+    background-color: #161616; 
+    border:1px solid #161616;
+    border-radius: 5px;
+    color: #d02fd0;
+    cursor: pointer;
+    font-size: 20px;
+    padding:10px;
+    margin:10px;
+    outline:none;
+    animation: 1s slideIn;
+    /* transition: 1s all; */
+}
+
+.btn:hover {
+    opacity: .7;
+}
+
 .board {
     display: flex;
     flex-direction: column;
@@ -7,10 +30,30 @@
 }
 
 .title {
+    color:#d02fd0;    
     text-align: center;
 }
 
 
 canvas {
-    border:1px solid black;
+    border-radius: 5px;
+    background-color: #161616;
+}
+
+.hidden {
+    display: none;
+}
+
+
+
+@keyframes slideIn {
+
+    0%{
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+
 }
