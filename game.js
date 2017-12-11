@@ -2,7 +2,7 @@ var Game = (function() {
 
 
 
-    var ctx, grid, newGrid, xCoord, yCoord, startBtn, stopBtn, id;
+    var ctx, grid, stateChangeGrid, xCoord, yCoord, startBtn, stopBtn, id;
     
 
 
@@ -24,7 +24,7 @@ var Game = (function() {
 
         //create separate arrays each with own memory location
         grid =  createArray(400); 
-        newGrid = createArray(400);
+        stateChangeGrid = createArray(400);
 
         // grid size
         xCoord = 400;
@@ -43,6 +43,7 @@ var Game = (function() {
     function startGame(e) {
 
         e.preventDefault();
+
         createGrid(); 
         fillLiveCells();
         runGame();
@@ -54,7 +55,9 @@ var Game = (function() {
 
 
     function stopGame(e) {
+
         e.preventDefault();
+
         window.cancelAnimationFrame(id);
         toggleHidden(startBtn);
         toggleHidden(stopBtn);
@@ -73,6 +76,7 @@ var Game = (function() {
     function runGame() {
 
         updateGrid();
+
         id = requestAnimationFrame(function() {
             runGame();
         })
@@ -80,8 +84,11 @@ var Game = (function() {
 
 
     function getOneOrZero() {
+
         var random = Math.random(); //get a random number 0-1
+
         random = (random * 2); //convert it to an int
+
         return Math.floor(random); // return 0 or 1
     }
 
@@ -126,7 +133,9 @@ var Game = (function() {
 
         // start x,y at 1
         for (var x = 1; x < xCoord; x++) { 
+
             for (var y = 1; y < yCoord; y++) { 
+
                 // only fill canvas with live cells = 1
                 if (grid[x][y] === 1) {
                     ctx.fillRect(x, y, 1, 1);
@@ -181,7 +190,7 @@ var Game = (function() {
                 }
 
                 //set new state alive or dead
-                newGrid[x][y] = fate;
+                stateChangeGrid[x][y] = fate;
             }
         }    
 
@@ -190,7 +199,7 @@ var Game = (function() {
             
             for (var y = 0; y < yCoord; y++) { //iterate y coords
 
-                grid[x][y] = newGrid[x][y];
+                grid[x][y] = stateChangeGrid[x][y];
             }
         }
 
