@@ -1,41 +1,53 @@
-(function(global) {
+var Game = (function() {
 
 
-        //[0,0], [1,0], [2,0], [3,0], [4,0], [5,0], [6,0], [7,0], [8,0], [9,0]
-        //[0,1], [1,1], [2,1], [3,1], [4,1], [5,1], [6,1], [7,1], [8,1], [9,1] 
-        //[0,2], [1,2], [2,2], [3,2], [4,2], [5,2], [6,2], [7,2], [8,2], [9,2]
-        //[0,3], [1,3], [2,3], [3,3], [4,3], [5,3], [6,3], [7,3], [8,3], [9,3]
 
-
-    var ctx = document.getElementById('myCanvas').getContext('2d');
+    var ctx, grid, newGrid, xCoord, yCoord, startBtn, stopBtn, id;
     
-    //create separate arrays each with own memory location
-    var grid =  createArray(400); 
-    var newGrid = createArray(400);
-
-    // grid size
-    var xCoord = 400;
-    var yCoord = 400;
-
-    //color of the canvas painting
-    ctx.fillStyle = "#d02fd0";
-
-    var startBtn = document.getElementsByClassName('btn')[0];
-    var stopBtn = document.getElementsByClassName('btn')[1];
-
-    var id; //hold animation frame id to cancel game
 
 
+
+    function init() {
+        
+        cacheDOM();
+        events();
+    }
+
+
+    function cacheDOM() {
+        
+        startBtn = document.getElementsByClassName('btn')[0];
+        stopBtn = document.getElementsByClassName('btn')[1];
+
+        ctx = document.getElementById('myCanvas').getContext('2d');
+        ctx.fillStyle = "#d02fd0";
+
+        //create separate arrays each with own memory location
+        grid =  createArray(400); 
+        newGrid = createArray(400);
+
+        // grid size
+        xCoord = 400;
+        yCoord = 400;
+    }
+
+        
+    function events() {
+
+        startBtn.addEventListener('click', startGame);
+        stopBtn.addEventListener('click', stopGame);
+
+    }
 
 
     function startGame(e) {
+
         e.preventDefault();
-        createGrid();
+        createGrid(); 
         fillLiveCells();
         runGame();
-
-        toggleHidden(startBtn);
-        toggleHidden(stopBtn);
+        toggleHidden(startBtn); //hide start btn
+        toggleHidden(stopBtn); // display stop btn
 
 
     }
@@ -66,10 +78,7 @@
         })
     }
 
-    startBtn.addEventListener('click', startGame);
-    stopBtn.addEventListener('click', stopGame);
-        
-    
+
     function getOneOrZero() {
         var random = Math.random(); //get a random number 0-1
         random = (random * 2); //convert it to an int
@@ -177,12 +186,14 @@
         }    
 
         // set orig grid to new state (must run loop to change values)
-        for (var x = 0; x < xCoord; x++) { //iterate through rows
-            for (var y = 0; y < yCoord; y++) { //iterate through columns
+        for (var x = 0; x < xCoord; x++) { //iterate x coords
+            
+            for (var y = 0; y < yCoord; y++) { //iterate y coords
+
                 grid[x][y] = newGrid[x][y];
-    
             }
-        }  
+        }
+
         //now repaint the canvas element with new state
         repaint(grid);
     }
@@ -194,16 +205,16 @@
 
         for(var x = 1; x < xCoord; x++) {
         
-        for(y = 1; y < yCoord; y++) {
+            for(y = 1; y < yCoord; y++) {
 
-            if(grid[x][y] === 1) {
-   
-                ctx.fillRect(x,y,1,1); //repaint canvas
-            }
+                if(grid[x][y] === 1) {
+    
+                    ctx.fillRect(x,y,1,1); //repaint canvas
+                }
             
+            }
         }
     }
-}
 
   
     
@@ -259,4 +270,17 @@
 
 
 
-})(window);
+  
+
+    // API to expose to global
+    return {
+        init
+    }
+
+
+    // example call 
+    // Game.init();
+
+
+
+})();
