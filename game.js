@@ -109,10 +109,10 @@ var Game = (function() {
         //dyanamically create the 2d array
         //can now automatically tack on y value for 2d after initial array creation 
 
-         //row
+         //x coord
         for(var x=0; x < xCoord; x++) {
 
-            //column --> now we can set the column since it exists from first grid loop
+            //y coord --> now we can set the y coordinate since it exists from first grid loop
             for(var y = 0; y < yCoord; y++) {
 
                 var binary = getOneOrZero();
