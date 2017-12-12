@@ -9,7 +9,7 @@ In this post I will be talking about Conway's Game of Life project that I had to
 
 ### Game State
 
-When dealing with the storage and state of the game, I first had to figure out what data structure I was going to use for the x and y coordinates. If you do not know, a canvas element operates on a x and y coordinate plane. A 2D array would suit the storage of the data perfectly, so that is what I ended up using. As for the value, I will be storing a 1 or a 0 for each x,y point. This will determine whether a cell (point) is alive or dead.
+When dealing with the storage and state of the game, I first had to figure out what data structure I was going to use for the x and y coordinates. Since a canvas element operates on a x and y coordinate plane, a 2D array would suit the storage of the data perfectly. As for the value, I will be storing a 1 or a 0 for each x,y point. This will determine whether a cell (point) is alive or dead.
 
 
 ##### Create the Arrays
