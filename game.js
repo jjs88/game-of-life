@@ -1,7 +1,7 @@
 var Game = (function() {
 
 
-
+    //private variables accessible within function
     var ctx, grid, stateChangeGrid, xCoord, yCoord, startBtn, stopBtn, id;
     
 
@@ -22,13 +22,13 @@ var Game = (function() {
         ctx = document.getElementById('myCanvas').getContext('2d');
         ctx.fillStyle = "#d02fd0";
 
-        //create separate arrays each with own memory location
-        grid =  createArray(400); 
-        stateChangeGrid = createArray(400);
+         // grid size
+         xCoord = 400;
+         yCoord = 400;
 
-        // grid size
-        xCoord = 400;
-        yCoord = 400;
+        //create separate arrays each with own memory location
+        grid =  createArray(xCoord); 
+        stateChangeGrid = createArray(xCoord);
     }
 
         
@@ -65,6 +65,7 @@ var Game = (function() {
 
 
     function toggleHidden(element) {
+
         if(!element.classList.contains('hidden')) {
             element.classList.add('hidden');
         } else {
@@ -131,10 +132,10 @@ var Game = (function() {
 
     function fillLiveCells() {
 
-        // start x,y at 1
-        for (var x = 1; x < xCoord; x++) { 
+        // start x,y at 1 and end 1 before last row/column
+        for (var x = 1; x < xCoord-1; x++) { 
 
-            for (var y = 1; y < yCoord; y++) { 
+            for (var y = 1; y < yCoord-1; y++) { 
 
                 // only fill canvas with live cells = 1
                 if (grid[x][y] === 1) {
@@ -153,10 +154,10 @@ var Game = (function() {
         let cnt;
 
         //x coordinate values
-        for(var x = 1; x < xCoord - 1; x++) {
+        for(var x = 1; x < xCoord-1; x++) {
             
             //y coordinate values
-            for(var y = 1; y < yCoord - 1; y++) {
+            for(var y = 1; y < yCoord-1; y++) {
  
                 state = grid[x][y];
                 cnt = getNeighborCnt(grid,x,y);
@@ -210,11 +211,11 @@ var Game = (function() {
 
     function repaint(grid) {
  
-        ctx.clearRect(0,0, 400, 400); //clear canvas
+        ctx.clearRect(0,0, xCoord, xCoord); //clear canvas
 
-        for(var x = 1; x < xCoord; x++) {
+        for(var x = 1; x < xCoord-1; x++) {
         
-            for(y = 1; y < yCoord; y++) {
+            for(y = 1; y < yCoord-1; y++) {
 
                 if(grid[x][y] === 1) {
     
